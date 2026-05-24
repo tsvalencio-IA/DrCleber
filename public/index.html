@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Receita Odontológica Digital</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div id="statusBox" class="notice hidden" style="position:fixed;right:14px;bottom:14px;z-index:9999;max-width:min(520px,calc(100% - 28px));box-shadow:var(--shadow)"></div>
+  <div id="loginView" class="login-box">
+    <div class="card">
+      <div class="logo">Rx</div>
+      <h1>Receita Odontológica Digital</h1>
+      <p>Login restrito ao cirurgião-dentista autorizado no Firebase Auth.</p>
+      <div class="field">
+        <label>E-mail do cirurgião-dentista</label>
+        <input id="loginEmail" type="email" autocomplete="email" placeholder="dentista@email.com">
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input id="loginSenha" type="password" autocomplete="current-password" placeholder="Senha cadastrada no Firebase Auth">
+      </div>
+      <div class="actions">
+        <button id="loginBtn" class="btn primary">Entrar</button>
+        <a class="btn ghost" href="validar.html">Validar receita</a>
+      </div>
+      <div class="notice warn" style="margin-top:14px">
+        Este sistema gera o PDF eletrônico e registra a validação. A assinatura ICP-Brasil verdadeira deve ser feita no PDF por assinador externo ou por integração com API/backend.
+      </div>
+    </div>
+  </div>
+
+  <div id="appView" class="app-shell hidden">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">Rx</div>
+        <div>
+          Receita Odontológica Digital
+          <small id="medResumo">Carregando cirurgião-dentista...</small>
+        </div>
+      </div>
+      <div class="userbar">
+        <span id="userEmail" class="badge blue"></span>
+        <a class="btn ghost" href="validar.html" target="_blank">Página de validação</a>
+        <button id="logoutBtn" class="btn red">Sair</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <div class="card">
+          <span class="badge amber">MVP com ICP por upload manual</span>
+          <h1>Sistema de receita digital com fluxo ICP-Brasil</h1>
+          <p>Gere a receita, assine o PDF em um assinador ICP-Brasil externo e suba o PDF assinado no histórico. O QR Code/link público passa a apontar para a validação do registro e para o PDF assinado.</p>
+          <div class="actions">
+            <button class="btn primary tab-btn" data-tab="nova">Nova receita</button>
+            <button class="btn ghost tab-btn" data-tab="icp">Como assinar ICP</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="kpi">
+            <div class="mini"><small>Pacientes</small><strong id="kpiPacientes">0</strong></div>
+            <div class="mini"><small>Receitas</small><strong id="kpiReceitas">0</strong></div>
+            <div class="mini"><small>Assinadas ICP</small><strong id="kpiAssinadas">0</strong></div>
+          </div>
+          <div class="notice warn" style="margin-top:12px">
+            Não use assinatura desenhada, carimbo em imagem ou foto de receita para chamar de ICP. O PDF precisa ser assinado digitalmente.
+          </div>
+        </div>
+      </section>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="nova">Nova receita</button>
+        <button class="tab-btn" data-tab="pacientes">Pacientes</button>
+        <button class="tab-btn" data-tab="historico">Histórico / subir ICP</button>
+        <button class="tab-btn" data-tab="perfil">Perfil do dentista</button>
+        <button class="tab-btn" data-tab="icp">Como colocar ICP</button>
+      </div>
+
+      <section id="tab-nova" class="tab-panel">
+        <div class="card">
+          <h2>Nova receita/documento</h2>
+          <p>Preencha, gere o PDF e depois assine externamente com ICP-Brasil.</p>
+          <div id="lastReceitaBox" class="notice warn hidden">
+            Receita gerada: <strong id="lastReceitaId"></strong>. Agora assine o PDF baixado e depois vá ao histórico para subir o PDF ICP. <a id="lastReceitaLink" target="_blank">Abrir validação</a>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label>Paciente</label>
+              <select id="recPaciente"><option value="">Cadastre/selecione um paciente</option></select>
+            </div>
+            <div class="field">
+              <label>Tipo</label>
+              <select id="recTipo">
+                <option value="RECEITA_SIMPLES">Receita odontológica simples</option>
+                <option value="ATESTADO">Atestado</option>
+                <option value="PEDIDO_EXAME">Pedido de exame</option>
+                <option value="ANTIMICROBIANO">Antimicrobiano — verificar regra sanitária</option>
+                <option value="CONTROLE_ESPECIAL">Controle especial — verificar regra sanitária/SNCR</option>
+                <option value="NOTIFICACAO_A">Notificação A — não liberar sem regra oficial</option>
+                <option value="NOTIFICACAO_B">Notificação B — não liberar sem regra oficial</option>
+                <option value="NOTIFICACAO_B2">Notificação B2 — não liberar sem regra oficial</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="field"><label>Medicamento/descrição</label><input id="recMedicamento" placeholder="Ex.: Dipirona"></div>
+            <div class="field"><label>Concentração</label><input id="recConcentracao" placeholder="Ex.: 500mg/ml"></div>
+            <div class="field"><label>Forma</label><input id="recForma" placeholder="Ex.: comprimido, gotas"></div>
+          </div>
+          <div class="grid three">
+            <div class="field"><label>Quantidade</label><input id="recQuantidade" placeholder="Ex.: 1 caixa"></div>
+            <div class="field"><label>Duração</label><input id="recDuracao" placeholder="Ex.: 7 dias"></div>
+            <div class="field"><label>Uso/intervalo resumido</label><input id="recPosologia" placeholder="Ex.: 1 comprimido de 8/8h"></div>
+          </div>
+          <div class="field"><label>Orientações completas</label><textarea id="recOrientacoes" placeholder="Orientações ao paciente"></textarea></div>
+          <div class="actions">
+            <button id="gerarReceitaBtn" class="btn primary">Gerar PDF para assinar ICP</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-pacientes" class="tab-panel hidden">
+        <div class="card">
+          <h2>Pacientes</h2>
+          <input id="pacId" type="hidden">
+          <div class="grid">
+            <div class="field"><label>Nome completo</label><input id="pacNome" placeholder="Nome do paciente"></div>
+            <div class="field"><label>CPF</label><input id="pacCpf" placeholder="000.000.000-00"></div>
+            <div class="field"><label>Data de nascimento</label><input id="pacNascimento" type="date"></div>
+            <div class="field"><label>Telefone/WhatsApp</label><input id="pacTelefone" placeholder="(17) 99999-9999"></div>
+            <div class="field"><label>E-mail</label><input id="pacEmail" type="email"></div>
+            <div class="field"><label>Endereço</label><input id="pacEndereco"></div>
+          </div>
+          <div class="actions">
+            <button id="savePacienteBtn" class="btn primary">Salvar paciente</button>
+            <button id="clearPacienteBtn" class="btn ghost">Limpar</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>Lista de pacientes</h3>
+          <div class="table-wrap">
+            <table id="pacientesTable"><thead><tr><th>Paciente</th><th>CPF</th><th>Nascimento</th><th>E-mail</th><th>Ações</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-historico" class="tab-panel hidden">
+        <div class="card">
+          <h2>Histórico / anexar PDF assinado ICP</h2>
+          <p>Depois de assinar no assinador externo, suba aqui o PDF assinado. O sistema calcula o hash SHA-256, salva no Cloudinary e atualiza a validação pública.</p>
+          <div class="table-wrap">
+            <table id="receitasTable"><thead><tr><th>ID/status</th><th>Paciente/tipo</th><th>Data</th><th>Hash</th><th>Ações</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-perfil" class="tab-panel hidden">
+        <div class="card">
+          <h2>Perfil do dentista e consultório odontológico</h2>
+          <div class="grid">
+            <div class="field"><label>Nome do cirurgião-dentista</label><input id="medNome"></div>
+            <div class="field"><label>CRO</label><input id="medCrm"></div>
+            <div class="field"><label>UF do CRO</label><input id="medUf" maxlength="2"></div>
+            <div class="field"><label>Especialidade/registro no CRO (se houver)</label><input id="medRqe"></div>
+            <div class="field"><label>Clínica/consultório odontológico</label><input id="medClinica"></div>
+            <div class="field"><label>Telefone</label><input id="medTelefone"></div>
+          </div>
+          <div class="field"><label>Endereço profissional</label><input id="medEndereco"></div>
+          <div class="field"><label>Rodapé do documento</label><textarea id="medRodape"></textarea></div>
+          <div class="actions"><button id="savePerfilBtn" class="btn primary">Salvar perfil</button></div>
+        </div>
+      </section>
+
+      <section id="tab-icp" class="tab-panel hidden">
+        <div class="card">
+          <h2>Como colocar a assinatura ICP-Brasil neste MVP</h2>
+          <div class="help-steps">
+            <div class="help-step"><strong>Gere o PDF no sistema.</strong><br>Na aba “Nova receita”, clique em “Gerar PDF para assinar ICP”. O PDF será baixado e também enviado ao Cloudinary, com o registro salvo no Firebase Realtime Database.</div>
+            <div class="help-step"><strong>Abra o Assinador ICP-Brasil externo.</strong><br>Use o certificado do cirurgião-dentista, certificado em nuvem do CFO/CRO, token A3, A1 ou serviço de assinatura aceito pelo cirurgião-dentista. O sistema não guarda certificado nem senha.</div>
+            <div class="help-step"><strong>Assine o PDF gerado.</strong><br>A assinatura deve ser feita diretamente no documento eletrônico, não por imagem de assinatura e não por carimbo colado.</div>
+            <div class="help-step"><strong>Baixe o PDF assinado.</strong><br>O arquivo assinado precisa continuar em PDF e conter a assinatura digital criptográfica.</div>
+            <div class="help-step"><strong>Volte ao histórico e suba o PDF assinado.</strong><br>No botão “Subir ICP”, selecione o PDF assinado. O sistema calcula o hash e atualiza a página pública de validação.</div>
+            <div class="help-step"><strong>Envie o link/QR para o paciente.</strong><br>A farmácia ou o paciente deve baixar o PDF assinado e conferir a assinatura em validador oficial ICP-Brasil.</div>
+          </div>
+          <div class="notice warn" style="margin-top:14px">
+            Modo automático de ICP exige backend/API de assinatura. Não existe forma segura de colocar arquivo .pfx, senha de certificado ou token A3 direto no HTML do GitHub Pages. Neste MVP, o PDF assinado é armazenado no Cloudinary por upload unsigned; para produção odontológica, prefira upload assinado/backend e entrega privada.
+          </div>
+          <h3 style="margin-top:16px">Ponto preparado para integração automática</h3>
+          <div class="code">/functions/assinarPdf.js  → futuro backend para enviar o PDF a uma API de assinatura ICP-Brasil e devolver o PDF assinado.</div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">Powered by thIAguinho Soluções Digitais</footer>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
