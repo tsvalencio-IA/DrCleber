@@ -19,8 +19,8 @@ window.APP_CONFIG = {
   // Crie um Upload Preset UNSIGNED no Cloudinary, restrito a PDF, e cole aqui.
   // Em produção odontológica, o ideal é usar upload assinado/backend para arquivos privados.
   cloudinary: {
-    cloudName: "COLE_SEU_CLOUD_NAME_AQUI",
-    uploadPreset: "COLE_SEU_UPLOAD_PRESET_UNSIGNED_AQUI",
+    cloudName: "dmuvm1o6m",
+    uploadPreset: "evolution",
     folder: "receita-odontologica-digital",
     resourceType: "raw"
   }
