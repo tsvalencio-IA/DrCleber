@@ -1,0 +1,30 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "dentistas": {
+      "s9b9CJPkUYdd5G5O71sGg9ZJSFH2": {
+        ".read": "auth != null && auth.uid === 's9b9CJPkUYdd5G5O71sGg9ZJSFH2'",
+        ".write": "auth != null && auth.uid === 's9b9CJPkUYdd5G5O71sGg9ZJSFH2'"
+      }
+    },
+    "pacientes": {
+      "s9b9CJPkUYdd5G5O71sGg9ZJSFH2": {
+        ".read": "auth != null && auth.uid === 's9b9CJPkUYdd5G5O71sGg9ZJSFH2'",
+        ".write": "auth != null && auth.uid === 's9b9CJPkUYdd5G5O71sGg9ZJSFH2'"
+      }
+    },
+    "receitasPrivadas": {
+      "s9b9CJPkUYdd5G5O71sGg9ZJSFH2": {
+        ".read": "auth != null && auth.uid === 's9b9CJPkUYdd5G5O71sGg9ZJSFH2'",
+        ".write": "auth != null && auth.uid === 's9b9CJPkUYdd5G5O71sGg9ZJSFH2'"
+      }
+    },
+    "receitasPublicas": {
+      "$receitaId": {
+        ".read": true,
+        ".write": "auth != null && auth.uid === 's9b9CJPkUYdd5G5O71sGg9ZJSFH2'"
+      }
+    }
+  }
+}
