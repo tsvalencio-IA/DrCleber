@@ -1,0 +1,3 @@
+// Este MVP não usa Firebase Storage.
+// Os PDFs são enviados para Cloudinary e as URLs/metadados ficam no Realtime Database.
+// Não há regra de Storage para colar no Firebase.
