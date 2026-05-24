@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Validar receita digital</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="logo">Rx</div><div>Validação de Receita<small id="rid">Informe o ID</small></div></div>
+    <div class="userbar"><a class="btn ghost" href="index.html">Área do cirurgião-dentista</a></div>
+  </header>
+  <main class="container">
+    <div class="card">
+      <h1>Validação pública</h1>
+      <p>Esta página confirma o registro da receita no sistema. A validade criptográfica da assinatura deve ser conferida no PDF assinado em validador oficial.</p>
+      <div class="notice warn">A receita digital verdadeira não é foto, scan, assinatura desenhada ou carimbo colado. Ela deve ser um PDF eletrônico assinado digitalmente.</div>
+    </div>
+    <div id="result" style="margin-top:14px"></div>
+  </main>
+  <footer class="footer">Powered by thIAguinho Soluções Digitais</footer>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/validar.js"></script>
+</body>
+</html>
